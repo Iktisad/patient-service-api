@@ -4,9 +4,10 @@ import fs from 'fs';
 const storage = multer.diskStorage({
     destination: (req,file,cb)=>{
 
+        
         let dir = req.baseUrl.split('/')
         dir = dir.pop();
-        const loc = `./uploads/${dir}/img-${req.body.patientUuid}`
+        const loc = `./uploads/${dir}/img-${req.body.puuid}`
 
         // check if directory exists
         if (!fs.existsSync(loc)) {
@@ -33,7 +34,6 @@ const upload = multer({
         if (file.mimetype == 'image/jpeg'||file.mimetype == 'image/png') {
             // console.log(path.relative(file.filename));
             // console.log(file);
-            console.log(cb);
             cb(null,true);
         }else{
             console.log("Only JPG or PNG file type supported");

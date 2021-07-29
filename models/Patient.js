@@ -4,23 +4,27 @@ const reqString = {
     type:String,
     trim:true,
     required:true,
-    maxlength:50,
     minlength:3,
+    maxlength:50,
 };
 const opString = {
     type:String,
-    minlength:3,
     maxlength:50,
 };
+const opMediumString = {
+    type:String,
+    maxlength:255,
+};
+
 const opNidString = { // optional string
     type: String,
     minlength:10,
     maxlength:20,
-}
+};
 
 const reqDate = {
     type:Date,
-    //required:true
+    required:true
 };
 
 const reqContactString = {
@@ -30,13 +34,44 @@ const reqContactString = {
     minlength:11,
     maxlength:17,
 };
+const puuidString = {
+    type:String,
+    unique:true,
+    required:true,
+    trim:true,
+    minlength:9,
+    maxlength:9,
+};
 
 //========================================================================================================================
+//Emergency Contact Schema
+const emergencySchema = mongoose.Schema({
+        name:reqString,
+        relation:reqString,
+        contact:reqContactString
+},
+{timestamps:true}
+);
 
+//========================================================================================================================
+// geo location schema 
+const geoSchema = mongoose.Schema({
+    type:{
+        type:String,
+        default:"Point"
+    },
+    coordinates:{
+        type:[Number],
+        index:"2dsphere"
+    }
+});
+
+//========================================================================================================================
 // Patient Schema holding general information
 const patientSchema = mongoose.Schema({
-    // uuid:"",
-    // profilePic:"",
+    
+    puuid: puuidString,
+    //profilePic:[opMediumString],
     firstName: reqString,
     lastName: opString,
     contact:reqContactString,
@@ -47,49 +82,59 @@ const patientSchema = mongoose.Schema({
     bloodGroup:reqString,
     nid:opNidString,
     nationality:reqString,
-    emergency:[
-        {
-            name:reqString,
-            relation:reqString,
-            contact:reqContactString
-        }
-    ],
-    address:[
-        {
-            addressType:reqString, // present or permanant
-            country:reqString,
-            city:reqString,
-            area:reqString,
-            location:reqString,
-            // district:reqString,
-        }
-    ],
+    emergency:[emergencySchema],
+    address:{
+        // addressType:reqString, // present(0), permanant(1) or history(2)
+        country:reqString,
+        city:reqString,
+        area:reqString,
+        zipcode:reqString,
+        location:geoSchema,
+        // district:reqString,
+    },
+    images:[String]
     
 },{timestamps:true});
 
+// patientSchema.createIndexes({puuid:1,unique:true})
 
 export const Patient = mongoose.model('Patients',patientSchema);
 //========================================================================================================================
+//address log independent schema for internal tracking of info
+// const addressLogSchema = mongoose.Schema({
+//     patientId:{type: mongoose.Types.ObjectId, ref: 'Patients'},
+//     addressType: reqString,
+//     country:reqString,
+//     city:reqString,
+//     area:reqString,
+//     zipcode:reqString,
+//     location:geoSchema,
+// });
+// export const AddressLog = mongoose.model('AddressLog', addressLogSchema);
+//========================================================================================================================
+
+
+
 // Basic Profile Schema of the patient holding info on Vaccination, Bad Habits, Allergies
 
-// allergy schema 
+
+
+// allergy schema as well as dictionary table of allergies
 const allergySchema = mongoose.Schema({
     
     name:reqString,
-    ICD_10_CM:reqString,
     
 },{timestamps:true});
 
 export const Allergy = mongoose.model('Allergy', allergySchema);
 
 //========================================================================================================================
-// Vaccine Schema
+// Vaccine Schema as well as dictionary table 
 const vaccineSchema = mongoose.Schema({
     
     name: reqString,
     type:reqString,
     dose:reqString,
-    gap:String,
     ICD_10_CM:reqString,
     
 },{timestamps:true});
@@ -100,8 +145,7 @@ export const Vaccine = mongoose.model('Vaccine', vaccineSchema);
 // Disease Labels
 const diseaseLabelSchema = mongoose.Schema({
     
-    name:reqString,
-    ICD_10_CM:reqString
+    name:reqString
     
 },{timestamps:true});
 
@@ -110,30 +154,34 @@ export const DiseaseLabel = mongoose.model('DiseaseLabel',diseaseLabelSchema);
 //========================================================================================================================
 // Basic Profile Schema
 const basicProfileSchema = mongoose.Schema({
-    patientUuid:{type: mongoose.Schema.Types.ObjectId, ref: 'Patients'},   // referring _id from Patient
+    patientId:{type: mongoose.Schema.Types.ObjectId, ref: 'Patients'}, // referring _id from Patient
+    puuid: puuidString,  
     
     vaccination:[
         {
-            _id: {type: mongoose.Schema.Types.ObjectId, ref: 'Vaccine'},
+            //_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Vaccine'},
+            //_id:false,
+            name:reqString,
+            type:reqString,
+            dose:reqString,
             date : reqDate,
             registrationNo:Number,
             dosage:Number,
-            administeredBy:reqString, // healthcare institute or doctor name
+            administeredBy:reqString,   // healthcare institute or doctor name
             nextDosage:reqDate,
-            image:{
-                filename:reqString,
-                location:reqString,
-            }
+            //images:[String]          // need to have a validation number instead of an image
         }, 
     ],
     allergies:[
         {
-            _id: {type: mongoose.Schema.Types.ObjectId, ref: 'Allergy'},
-            reason:opString,
+            _id:false,
+            //_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Allergy'},
+            name:reqString,
+            reason:opString
         }
     ],
     badHabits:[String],
-    diseaseTags: [diseaseLabelSchema] // labels of diseases 
+    diseaseTags: [String] // labels of diseases 
     
 },{timestamps:true});
 
