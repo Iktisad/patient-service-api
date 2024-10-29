@@ -1,21 +1,42 @@
-# patient-service-api
+# Patient Service API
 
-> ### installing dependencies:
+## Overview
+This is the backend service for managing patient data, built using Express.js and MongoDB. The API allows CRUD operations on patient information and supports file uploads.
 
- 1. npm i --save-express // installing express js along with node modules.
- 2. npm i --save-dev nodemon // any changes made on code is instantly reflected on server without restarting it.
- 3. npm i dotenv // dotenv configuration file for safe keeping ports and connection strings.
- 4. npm i mongoose // api for express js to connect and CRUD mongo db.
- 5. npm i --save multer // storing and manipulating files.
- 6. npm i --save swagger-jsdoc swagger-ui-express // installing swagger to enable documentation.
- 7. npm i winston // logger for debugging API.
- 8. npm i winston-mongodb
+## Installation
 
- ### set up environment
+### Install Dependencies
+Run the following command to install the necessary dependencies:
 
- 1. change .example.env file to .env file
- 2. set the follwing parametres **PORT**=your application server port number, **DBPORT**=your mongodb port number, **DATABASE**=your database name, **NODE_ENV**=set it to development for debugging and production for deployment
+```bash
+npm install
+```
 
+## Setup Environment
 
- 
+1. Rename the `.example.env` file to `.env`.
+2. Set the following environment variables in the `.env` file:
+   - **PORT**: Application server port number.
+   - **DBPORT**: MongoDB server port number.
+   - **DATABASE**: Name of your database.
+   - **NODE_ENV**: Set to `development` for debugging or `production` for deployment.
+
+## Running the Application
+
+To run the application, use:
+```bash
+npm start
+```
+For development purposes with automatic server restarts, use:
+```bash
+npm run dev
+```
+
+## Documentation
+
+Access API documentation at `/api-docs` after running the server. Swagger UI provides detailed information about available endpoints and how to interact with them.
+
+## Contributing
+
+If you'd like to contribute, please fork the repository and use a feature branch. Pull requests are warmly welcome.
 
